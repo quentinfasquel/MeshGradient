@@ -40,7 +40,7 @@ public struct MeshRandomizer {
 	/// Grid is drawed from top to bottom, and because of that changing of X locations can create visual glitches
 	public static func automaticallyRandomizeLocationYExceptTopAndBottomBasedOnGridSize() -> LocationRandomizer {
 		return { location, x, y, gridWidth, gridHeight in
-			let locationVariationRange = 1.2 * 1 / Float(gridHeight)
+			let locationVariationRange = 1.6 * 1 / Float(gridHeight)
 			if y != 0 && y != gridHeight - 1 {
 				location.y += .random(in: -locationVariationRange...locationVariationRange)
 			}
