@@ -24,7 +24,15 @@ public struct Grid<Element> {
 		self.height = arr.count / width
 		self.elements = ContiguousArray(arr)
 	}
-	
+
+    public init(width: Int, array arr: [Element]) {
+        assert(arr.count.isMultiple(of: width))
+        self.width = width
+        self.height = arr.count / width
+        self.elements = ContiguousArray(arr)
+    }
+
+
 	public func index(x: Int, y: Int) -> Int {
 		x + y * width
 	}
@@ -93,7 +101,8 @@ extension Grid: VectorArithmetic, AdditiveArithmetic where Element: VectorArithm
     }
 }
 
-extension SIMD2: VectorArithmetic, AdditiveArithmetic where Scalar == Float {
+#if compiler(>=6)
+extension SIMD2: @retroactive VectorArithmetic, @retroactive AdditiveArithmetic where Scalar == Float {
     public mutating func scale(by rhs: Double) {
         self = self * SIMD2<Scalar>(x: Float(rhs), y: Float(rhs))
     }
@@ -103,7 +112,7 @@ extension SIMD2: VectorArithmetic, AdditiveArithmetic where Scalar == Float {
     }
 }
 
-extension SIMD3: VectorArithmetic, AdditiveArithmetic where Scalar == Float {
+extension SIMD3: @retroactive VectorArithmetic, @retroactive AdditiveArithmetic where Scalar == Float {
     public mutating func scale(by rhs: Double) {
         self = self * SIMD3<Scalar>(x: Float(rhs), y: Float(rhs), z: Float(rhs))
     }
@@ -112,3 +121,24 @@ extension SIMD3: VectorArithmetic, AdditiveArithmetic where Scalar == Float {
         Double(x*x+y*y+z*z)
     }
 }
+#else
+extension SIMD2: VectorArithmetic, AdditiveArithmetic where Scalar == Float {
+    public mutating func scale(by rhs: Double) {
+        self = self * SIMD2<Scalar>(x: Float(rhs), y: Float(rhs))
+    }
+
+    public var magnitudeSquared: Double {
+        Double(x*x + y*y)
+    }
+}
+
+extension SIMD3: VectorArithmetic, AdditiveArithmetic where Scalar == Float {
+    public mutating func scale(by rhs: Double) {
+        self = self * SIMD3<Scalar>(x: Float(rhs), y: Float(rhs), z: Float(rhs))
+    }
+
+    public var magnitudeSquared: Double {
+        Double(x*x+y*y+z*z)
+    }
+}
+#endif
